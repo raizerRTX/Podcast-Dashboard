@@ -910,6 +910,272 @@ function beansStatisticsChart(value_1, value_2, value_3, value_4, value_5, categ
   chart.render();
 }
 
+function yieldForecastGraph(podsData, beansData, category) {
+  var yieldForecastGraphOptions = {
+    series: [
+      {
+        name: 'Pods',
+        data: podsData
+      },
+      {
+        name: 'Beans',
+        data: beansData
+      },
+    ],
+    chart: {
+      height: 350,
+      type: 'line',
+      toolbar: { 
+        show: true 
+      },
+      zoom: {
+        enabled: true
+      }
+      
+    },
+    plotOptions: {
+      bar: {
+        columnWidth: '35%',
+        borderRadius: 12,
+        startingShape: 'rounded',
+        endingShape: 'rounded'
+      }
+    },
+    colors: ["#4CC9F0", "#7209B7"],
+    dataLabels: {
+      enabled: true
+    },
+    stroke: {
+      curve: 'smooth',
+      width: 3
+    },
+    legend: {
+      show: true,
+      horizontalAlign: 'left',
+      position: 'top',
+      markers: {
+        height: 8,
+        width: 8,
+        radius: 12,
+        offsetX: -3
+      },
+      labels: {
+       // colors: axisColor
+      },
+      itemMargin: {
+        horizontal: 15
+      }
+    },
+    grid: {
+      borderColor: borderColor,
+      padding: {
+        top: 0,
+        bottom: -8,
+        left: 20,
+        right: 20
+      },
+      row: {
+        colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+        opacity: 0.5
+      },  
+    },
+    xaxis: {
+      categories: category,
+      labels: {
+        style: {
+          fontSize: '13px',
+          colors: axisColor
+        }
+      },
+      axisTicks: {
+        show: false
+      },
+      axisBorder: {
+        show: true
+      }
+    },
+    yaxis: {
+      labels: {
+        style: {
+          fontSize: '13px',
+          colors: axisColor
+        }
+      }
+    },
+    responsive: [
+      {
+        breakpoint: 1700,
+        options: {
+          plotOptions: {
+            bar: {
+              borderRadius: 10,
+              columnWidth: '32%'
+            }
+          }
+        }
+      },
+      {
+        breakpoint: 1580,
+        options: {
+          plotOptions: {
+            bar: {
+              borderRadius: 10,
+              columnWidth: '35%'
+            }
+          }
+        }
+      },
+      {
+        breakpoint: 1440,
+        options: {
+          plotOptions: {
+            bar: {
+              borderRadius: 10,
+              columnWidth: '42%'
+            }
+          }
+        }
+      },
+      {
+        breakpoint: 1300,
+        options: {
+          plotOptions: {
+            bar: {
+              borderRadius: 10,
+              columnWidth: '48%'
+            }
+          }
+        }
+      },
+      {
+        breakpoint: 1200,
+        options: {
+          plotOptions: {
+            bar: {
+              borderRadius: 10,
+              columnWidth: '40%'
+            }
+          }
+        }
+      },
+      {
+        breakpoint: 1040,
+        options: {
+          plotOptions: {
+            bar: {
+              borderRadius: 11,
+              columnWidth: '48%'
+            }
+          }
+        }
+      },
+      {
+        breakpoint: 991,
+        options: {
+          plotOptions: {
+            bar: {
+              borderRadius: 10,
+              columnWidth: '30%'
+            }
+          }
+        }
+      },
+      {
+        breakpoint: 840,
+        options: {
+          plotOptions: {
+            bar: {
+              borderRadius: 10,
+              columnWidth: '35%'
+            }
+          }
+        }
+      },
+      {
+        breakpoint: 768,
+        options: {
+          plotOptions: {
+            bar: {
+              borderRadius: 10,
+              columnWidth: '28%'
+            }
+          }
+        }
+      },
+      {
+        breakpoint: 640,
+        options: {
+          plotOptions: {
+            bar: {
+              borderRadius: 10,
+              columnWidth: '32%'
+            }
+          }
+        }
+      },
+      {
+        breakpoint: 576,
+        options: {
+          plotOptions: {
+            bar: {
+              borderRadius: 10,
+              columnWidth: '37%'
+            }
+          }
+        }
+      },
+      {
+        breakpoint: 480,
+        options: {
+          plotOptions: {
+            bar: {
+              borderRadius: 10,
+              columnWidth: '45%'
+            }
+          }
+        }
+      },
+      {
+        breakpoint: 420,
+        options: {
+          plotOptions: {
+            bar: {
+              borderRadius: 10,
+              columnWidth: '52%'
+            }
+          }
+        }
+      },
+      {
+        breakpoint: 380,
+        options: {
+          plotOptions: {
+            bar: {
+              borderRadius: 10,
+              columnWidth: '60%'
+            }
+          }
+        }
+      }
+    ],
+    states: {
+      hover: {
+        filter: {
+          type: 'none'
+        }
+      },
+      active: {
+        filter: {
+          type: 'none'
+        }
+      }
+    }
+  };
+
+  var chart = new ApexCharts(document.querySelector("#yieldGraph"), yieldForecastGraphOptions);
+  chart.render();
+}
+
 function podsGrowthChart(percentage) {
     var variantGrowthChartOptions = {
       series: [percentage],

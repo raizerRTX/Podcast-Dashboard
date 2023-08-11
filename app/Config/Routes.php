@@ -41,6 +41,7 @@ $routes->post('forecast', 'DataController::tree_Yield_Forecast');
 $routes->post('treeStatus', 'DataController::tree_Status');
 $routes->post('generateReport', 'DataController::generate_Report');
 $routes->get('getFile', 'DataController::get_File');
+$routes->post('forecastGraph', 'DataController::generate_Forecast_Graph');
 
 /*
  * --------------------------------------------------------------------

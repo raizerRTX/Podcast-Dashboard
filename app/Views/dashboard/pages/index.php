@@ -192,7 +192,7 @@
                   <div class="card h-100">
                     <div class="row row-bordered g-0">
                       <div class="col-md-8">
-                        <h5 class="card-header m-0 me-2 pb-3">Combined Total Statistics</h5>
+                        <h5 class="card-header m-0 me-2 pb-3"><b>Combined Total Statistics</b></h5>
                         <div id="combinedTotalChart" class="px-2"></div>
                       </div>
                       <div class="col-md-4">
@@ -228,7 +228,7 @@
                 <div class="card">
                     <div class="row row-bordered g-0">
                       <div class="col-md-8">
-                        <h5 class="card-header m-0 me-2 pb-3">Cacao Pods Statistics</h5>
+                        <h5 class="card-header m-0 me-2 pb-3"><b>Cacao Pods Statistics</b></h5>
                         <div id="podsStatistics" class="px-2"></div>
                       </div>
                       <div class="col-md-4">
@@ -262,7 +262,7 @@
                 <div class="card">
                     <div class="row row-bordered g-0">
                       <div class="col-md-8">
-                        <h5 class="card-header m-0 me-2 pb-3">Cacao Beans Statistics</h5>
+                        <h5 class="card-header m-0 me-2 pb-3"><b>Cacao Beans Statistics</b></h5>
                         <div id="beansStatistics" class="px-2"></div>
                       </div>
                       <div class="col-md-4">
@@ -295,7 +295,7 @@
               <div id="calendar_panel" class="col-12 w-100 col-lg-8 order-2 order-md-3 order-lg-2 mb-4">
                 <div class="card">
                   <div class="row row-bordered g-0">
-                    <div class="col-md-8">
+                    <div class="col-md-8 overflow-auto">
                       <h5 class="card-header m-0 me-2 pb-3"><b>Cacao Harvest Calendar</b></h5>
                     </div>
                     <hr>
@@ -318,7 +318,7 @@
                     </div>
                     <hr>
                   </div>
-                  <div class="container-fluid">
+                  <div class="container-fluid overflow-auto">
                     <table class="dataTable table-stripe text-center display responsive" cellspacing="0" id="myTable">
                       <thead>
                           <tr>
@@ -350,13 +350,14 @@
                     </div>
                     <hr>
                   </div>
-                  <div class="container-fluid">
+                  <div class="container-fluid overflow-auto">
                     <table class="dataTable table-stripe text-center display responsive" cellspacing="0" id="statusTable">
                       <thead>
                           <tr>
                               <th class="text-center">Tree ID</th>
                               <th class="text-center">Tree Variety</th>
                               <th class="text-center">Last Modified Date</th>
+                              <th class="text-center">Action</th>
                           </tr>
                       </thead>
                       <tbody>
@@ -379,10 +380,12 @@
                     <hr>
                   </div>
                   <div class="container-fluid d-flex flex-row">
-                    <div class="container" style="border: 1px solid blue;">
-                      <div id="beansStatistics" class="px-2"></div>
+                    <div class="container me-3 w-75 card">
+                      <div id="yieldGraph" class="px-2"></div>
                     </div>
-                    <div class="container" style="border: 1px solid red;">
+                    <div class="container overflow-auto card">
+                      <br>
+                      <br>
                       <table class="dataTable table-stripe text-center display responsive" cellspacing="0" id="forecast_tbl">
                         <thead>
                             <tr>
@@ -390,6 +393,7 @@
                                 <th class="text-center">Tree Variety</th>
                                 <th class="text-center">Expected Yield - Pods</th>
                                 <th class="text-center">Expected Yield - Beans</th>
+                                <th class="text-center">Estimated Weight - Beans</th>
                                 <th class="text-center">Expected Harvest Date</th>
                             </tr>
                         </thead>
