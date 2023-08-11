@@ -132,7 +132,7 @@ class DataControllerModel{
 
     public static function get_Surveyor_Names() {
         return DataControllerModel::database()->query(
-            "SELECT DISTINCT(surveyor_name) FROM podcast_trees_records WHERE created = CURRENT_DATE"
+            "SELECT DISTINCT(surveyor_name), tree_id, expected_yield FROM podcast_trees_records WHERE created = CURRENT_DATE"
         );
     }
 }

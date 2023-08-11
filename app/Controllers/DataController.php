@@ -1266,6 +1266,22 @@ class DataController extends BaseController {
             $get_total = DCM::get_Added_Pods();
             $get_names = DCM::get_Surveyor_Names();
 
+            $table_data .= <<<EOF
+            <tr>
+            <td>N/A</td>
+            <td>N/A</td>
+            <td>N/A</td>
+            </tr>
+        EOF;
+
+            $list_data .= <<<EOF
+            <tr>
+            <td>N/A</td>
+            <td>N/A</td>
+            <td>N/A</td>
+            </tr>
+        EOF;
+
             foreach ($get_data->getResult() as $row) {
                 $pods_sum = $row->expected_yield;
                 if ($row->varieties == "UF-18") {
@@ -1288,11 +1304,11 @@ class DataController extends BaseController {
                 $date = date('F d, Y',strtotime($row->expected_harvest_date));
 
                 $table_data .= <<<EOF
-                    <tr>
-                    <td>{$pods_sum}</td>
-                    <td>{$beans}</td>
-                    <td>{$date}</td>
-                    </tr>
+                <tr>
+                <td>{$pods_sum}</td>
+                <td>{$beans}</td>
+                <td>{$date}</td>
+                </tr>
                 EOF;
             }
 
@@ -1305,16 +1321,14 @@ class DataController extends BaseController {
             }
 
             foreach($get_names->getResult() as $row) {
-                if ($row->surveyor_name != "") {
-                    $total_farmers++;
-                    $list_data .= <<<EOF
-                    <li>{$row->surveyor_name}</li>
-                EOF;
-                } else {
-                    $list_data .= <<<EOF
-                    <li>N/A</li>
-                EOF;
-                }
+                $total_farmers++;
+                $list_data .= <<<EOF
+                <tr>
+                <td>{$row->surveyor_name}</td>
+                <td>{$row->expected_yield}</td>
+                <td>{$row->tree_id}</td>
+                </tr>
+            EOF;
             }
 
             $mpdf = new \Mpdf\Mpdf();
@@ -1425,7 +1439,6 @@ class DataController extends BaseController {
                 font-size: 15px;
             }
             </style>
-            <br><br>
             <h3 class="title">Podcast System Forecast Report</h3>
             <table class="date" align="center">
                 <tr>
@@ -1453,7 +1466,20 @@ class DataController extends BaseController {
             </ul>
             <br>
             <h3>List of Farmer\'s: </h3>
-            <ol>'. $list_data .'</ol>
+            <table class="borrowers_table">
+                <thead>
+                    <tr>
+                        <th>Surveyor Name</th>
+                        <th>Added Cacao Pods</th>
+                        <th>Surveyed Tree ID</th>
+                    </tr>
+                </thead>
+                <tbody>'
+                   . $list_data .
+                '</tbody>
+            </table>
+            <br>
+            <br>
             <h4>Total Farmers Today: ' . $total_farmers . '
             ';
     
