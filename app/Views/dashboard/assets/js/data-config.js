@@ -29,7 +29,7 @@ $(document).ready(function(e) {
 
     $('#forecast_tbl').DataTable( {
         "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]],
-        "pageLength": 10,
+        "pageLength": 3,
         ajax: {
             url: "forecast",
             type: 'POST',
@@ -92,6 +92,7 @@ $(document).ready(function(e) {
     getPodsStatsData();
     getBeansStatsData();
     getCalendarEvents();
+    getForecastGraph();
     treeManagement();
 });
 
@@ -212,6 +213,31 @@ function getBeansStatsData() {
             beansStatisticsChart(response.var1.map(Number), response.var4.map(Number), response.var2.map(Number), response.var3.map(Number), response.var5.map(Number), categories);
             beansGrowthChart(parseInt(response.beans_growth));
             
+        }
+    }); 
+}
+
+function getForecastGraph() {
+    var categories = [];
+    const url =  "forecastGraph";
+    let hash = $("#v_button").attr("data-hash");
+    var postData = {
+            "csrf_test_name" : hash
+    };
+    
+    getPageInfo(url, postData, function(response) {
+        if (response.status != 200) {
+            //Swal
+        } else {
+            const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+            for (var i = 1; i <= 12; i++) {
+                const d = new Date(String(i));
+                let name = month[d.getMonth()];
+                categories.push(name);
+            }                
+
+            yieldForecastGraph(response.pods_data.map(Number), response.beans_data.map(Number), categories);
         }
     }); 
 }

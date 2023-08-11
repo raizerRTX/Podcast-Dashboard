@@ -1095,6 +1095,7 @@ class DataController extends BaseController {
         $arr = [];
         $get_data = DCM::getTreeForecast();
         $response = [];
+        $label = "";
         $beans = 0;
         
         try {
@@ -1116,11 +1117,25 @@ class DataController extends BaseController {
                     $this->setAveBeansCount(27);
                     $beans = $row->expected_yield * $this->getAveBeansCount(); 
                 }
+
+                $expected_beans_w = $beans * $this->getAveBeansWeight();
+
+                if ($expected_beans_w < 1000) {
+                    $label = $expected_beans_w . " g.";
+                } else if ($expected_beans_w < 1000000 && $expected_beans_w > 1000) {
+                    $newWeight = $expected_beans_w * 0.001;
+                    $label = number_format((float)$expected_beans_w, 2, '.', '') . " kg.";
+                } else if ($expected_beans_w > 1000000) {
+                    $newWeight = $expected_beans_w * 0.0001;
+                    $label = number_format((float)$expected_beans_w, 2, '.', '') . " T.";
+                }
+    
                 $arr[] = [
                     $row->tree_id,
                     $row->varieties,
                     $row->expected_yield,
                     $beans,
+                    $label,
                     date('F d, Y',strtotime($row->expected_harvest_date))
                 ];
             }
@@ -1166,6 +1181,74 @@ class DataController extends BaseController {
 
         return $this->response->setJSON($response);
         exit;
+    }
+
+    public function generate_Forecast_Graph() {
+        $pods_data = [];
+        $beans_data = [];
+        $year = date('Y');
+        $new_month = "";
+        $c = 0;
+        $pods_sum = 0;
+        $beans = 0;
+
+        try {   
+
+            for($i = 1; $i <= 12; $i++) {
+                if ($i <= 9) {
+                    $new_month = "0" . $i;
+                } else {
+                    $new_month = $i;
+                }
+          
+                $pods_sum = 0;
+                $beans = 0;
+                $get_data = DCM::getTreeForecastStats($year, $new_month);
+
+                foreach($get_data->getResult() as $row) {
+                    $pods_sum =+ $row->expected_yield;
+                    if ($row->expected_yield == "") {
+                        array_push($pods_data, 0);
+                    } else {
+                        $beans = 0;
+                        if ($row->varieties == "UF-18") {
+                            $this->setAveBeansCount(27);
+                            $beans =+ $row->expected_yield * $this->getAveBeansCount(); 
+                        } else if ($row->varieties == "K9") {
+                            $this->setAveBeansCount(24);
+                            $beans =+ $row->expected_yield * $this->getAveBeansCount(); 
+                        } else if ($row->varieties == "K2") {
+                            $this->setAveBeansCount(34);
+                            $beans =+ $row->expected_yield * $this->getAveBeansCount(); 
+                        } else if ($row->varieties == "PBC 123") {
+                            $this->setAveBeansCount(27);
+                            $beans =+ $row->expected_yield * $this->getAveBeansCount(); 
+                        } else {
+                            $this->setAveBeansCount(27);
+                            $beans =+ $row->expected_yield * $this->getAveBeansCount(); 
+                        }
+                    }
+                }
+                array_push($pods_data, $pods_sum);
+                array_push($beans_data, $beans);
+            }
+
+            $arr = [
+                'status' => 200,
+                'pods_data' => $pods_data,
+                'beans_data' => $beans_data
+            ];
+
+            return $this->response->setJSON($arr);
+
+        } catch (\Exception $e) {
+            $arr = [
+                'status' => 500,
+                'data' => $e->getMessage()
+            ];
+
+            return $this->response->setJSON($arr);
+        }
     }
 
     public function generate_Report() {

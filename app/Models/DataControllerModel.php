@@ -79,7 +79,16 @@ class DataControllerModel{
             "SELECT DISTINCT(ptr.tree_id), ptr.expected_yield, 
             ptr.expected_harvest_date, pt.* FROM podcast_trees_records ptr
             INNER JOIN podcast_trees pt ON pt.id = ptr.tree_id
-            WHERE expected_harvest_date > CURRENT_DATE + 1
+            ORDER BY ptr.expected_harvest_date DESC"
+        );
+    }
+
+    public static function getTreeForecastStats($year, $month) {
+        return DataControllerModel::database()->query(
+            "SELECT DISTINCT(ptr.tree_id), ptr.expected_yield, 
+            ptr.expected_harvest_date, pt.* FROM podcast_trees_records ptr
+            INNER JOIN podcast_trees pt ON pt.id = ptr.tree_id
+            WHERE to_char(expected_harvest_date, 'YYYY-MM') = '{$year}-{$month}'
             ORDER BY ptr.tree_id ASC"
         );
     }
