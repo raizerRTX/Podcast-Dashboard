@@ -357,6 +357,7 @@
                               <th class="text-center">Tree ID</th>
                               <th class="text-center">Tree Variety</th>
                               <th class="text-center">Last Modified Date</th>
+                              <th class="text-center">Action</th>
                           </tr>
                       </thead>
                       <tbody>

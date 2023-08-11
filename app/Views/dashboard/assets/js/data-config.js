@@ -485,7 +485,7 @@ function reloadWidget() {
 $("#generate_report_btn").click(function(e) {
    $(this).text("Generating Report");
    
-   const url =  "generateReport";
+    const url =  "generateReport";
     let hash = $("#v_button").attr("data-hash");
     var postData = {
             "csrf_test_name" : hash
@@ -528,6 +528,43 @@ function downloadFile(fileName) {
         })
     );
 }
+
+$(".remove_tree").on('click', function(e) {
+    const url =  "removeTree";
+    let hash = $("#v_button").attr("data-hash");
+    var postData = {
+            "csrf_test_name" : hash,
+            'tree_id' : $(this).attr('data-id')
+    };
+    
+    getPageInfo(url, postData, function(response) {
+        if (response.response == 200) {
+            Swal.fire({
+                title: "Success",
+                text: "Tree has been removed.",
+                icon: "success",
+            }) .then((value) => {
+                if (value) {
+                    
+                } else {
+                    
+                }
+            });
+        } else {
+            Swal.fire({
+                title: "An Error Occur",
+                text: "Something went south",
+                icon: "error",
+            }) .then((value) => {
+                if (value) {
+                    
+                } else {
+                    
+                }
+            });
+        }
+    });
+});
 
 
 

@@ -103,6 +103,7 @@ class DataControllerModel{
     public static function getTreeStatus() {
         return DataControllerModel::database()->query(
             "SELECT * FROM podcast_trees WHERE modified + 30 < CURRENT_DATE
+            AND tree_status != ''
             ORDER BY modified DESC"
         );
     }
@@ -133,6 +134,12 @@ class DataControllerModel{
     public static function get_Surveyor_Names() {
         return DataControllerModel::database()->query(
             "SELECT DISTINCT(surveyor_name), tree_id, expected_yield FROM podcast_trees_records WHERE created = CURRENT_DATE"
+        );
+    }
+
+    public static function remove_Tree($id) {
+        return DataControllerModel::database()->query(
+            "UPDATE FROM podcast_trees SET tree_status = '' WHERE tree_id = {$id}"
         );
     }
 }

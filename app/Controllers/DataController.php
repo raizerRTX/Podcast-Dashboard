@@ -1158,14 +1158,28 @@ class DataController extends BaseController {
         $arr = [];
         $get_data = DCM::getTreeStatus();
         $response = [];
+        $btn = "";
         
         try {
             foreach ($get_data->getResult() as $row) {
+                if ($row->tree_status == "active") {
+                    $btn =  "<button type='button' class='btn btn-radius btn-success disabled btn-sm'>
+                        <b>Active</b>
+                    </button>";
+                } else {
+                    $btn =  "<button type='button' class='btn btn-radius btn-warning disabled btn-sm'>
+                        <b>Inactive</b>
+                    </button>
+                    <button type='button' id='remove_tree' data-id=".$row->id." class='btn btn-radius btn-danger btn-sm remove_tree'>
+                        Delete
+                    </button>";
+                }
+
                 $arr[] = [
                     $row->tree_id,
                     $row->varieties,
                     date('F d, Y',strtotime($row->modified)),
-                    //date('F d, Y',strtotime($row->expected_harvest_date))
+                    $btn
                 ];
             }
     
@@ -1512,6 +1526,26 @@ class DataController extends BaseController {
                 'data' => "Something Went Wrong.",
                 'error' => $e->getMessage()
             ];
+        }
+    }
+
+    public function remove_Tree() {
+        $tree_id = $this->request->getVar('tree_id');
+
+        try {
+            $update = DCM::remove_Tree($tree_id);
+
+            $arr = [
+                'status' => 200
+            ];
+
+            return $this->response->setJSON($arr);
+        } catch (\Exception $e) {
+            $arr = [
+                'status' => 500
+            ];
+
+            return $this->response->setJSON($arr);
         }
     }
 
