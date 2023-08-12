@@ -1200,11 +1200,13 @@ class DataController extends BaseController {
     public function generate_Forecast_Graph() {
         $pods_data = [];
         $beans_data = [];
+        $weight = [];
         $year = date('Y');
         $new_month = "";
         $c = 0;
         $pods_sum = 0;
         $beans = 0;
+        $label = 0;
 
         try {   
 
@@ -1217,6 +1219,7 @@ class DataController extends BaseController {
           
                 $pods_sum = 0;
                 $beans = 0;
+                $label = 0;
                 $get_data = DCM::getTreeForecastStats($year, $new_month);
 
                 foreach($get_data->getResult() as $row) {
@@ -1224,33 +1227,46 @@ class DataController extends BaseController {
                     if ($row->expected_yield == "") {
                         array_push($pods_data, 0);
                     } else {
-                        $beans = 0;
                         if ($row->varieties == "UF-18") {
                             $this->setAveBeansCount(27);
-                            $beans =+ $row->expected_yield * $this->getAveBeansCount(); 
+                            $beans = $beans + $row->expected_yield * $this->getAveBeansCount(); 
                         } else if ($row->varieties == "K9") {
                             $this->setAveBeansCount(24);
-                            $beans =+ $row->expected_yield * $this->getAveBeansCount(); 
+                            $beans = $beans + $row->expected_yield * $this->getAveBeansCount(); 
                         } else if ($row->varieties == "K2") {
                             $this->setAveBeansCount(34);
-                            $beans =+ $row->expected_yield * $this->getAveBeansCount(); 
+                            $beans = $beans + $row->expected_yield * $this->getAveBeansCount(); 
                         } else if ($row->varieties == "PBC 123") {
                             $this->setAveBeansCount(27);
-                            $beans =+ $row->expected_yield * $this->getAveBeansCount(); 
+                            $beans = $beans + $row->expected_yield * $this->getAveBeansCount(); 
                         } else {
                             $this->setAveBeansCount(27);
-                            $beans =+ $row->expected_yield * $this->getAveBeansCount(); 
+                            $beans = $beans + $row->expected_yield * $this->getAveBeansCount(); 
+                        }
+
+                        $expected_beans_w = $beans * $this->getAveBeansWeight();
+
+                        if ($expected_beans_w < 1000) {
+                            $label = $expected_beans_w * 0.001;
+                        } else if ($expected_beans_w < 1000000 && $expected_beans_w > 1000) {
+                            $newWeight = $expected_beans_w * 0.001;
+                            $label = number_format((float)$expected_beans_w, 2, '.', '');
+                        } else if ($expected_beans_w > 1000000) {
+                            $newWeight = $expected_beans_w * 0.0001;
+                            $label = number_format((float)$expected_beans_w, 2, '.', '');
                         }
                     }
                 }
                 array_push($pods_data, $pods_sum);
                 array_push($beans_data, $beans);
+                array_push($weight, $label);
             }
 
             $arr = [
                 'status' => 200,
                 'pods_data' => $pods_data,
-                'beans_data' => $beans_data
+                'beans_data' => $beans_data,
+                'weight_data' => $weight
             ];
 
             return $this->response->setJSON($arr);
@@ -1280,21 +1296,25 @@ class DataController extends BaseController {
             $get_total = DCM::get_Added_Pods();
             $get_names = DCM::get_Surveyor_Names();
 
-            $table_data .= <<<EOF
-            <tr>
-            <td>N/A</td>
-            <td>N/A</td>
-            <td>N/A</td>
-            </tr>
-        EOF;
+            if ($get_data->getNumRows() <= 0) {
+                $table_data = <<<EOF
+                <tr>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                </tr>
+            EOF;
+            }
 
-            $list_data .= <<<EOF
-            <tr>
-            <td>N/A</td>
-            <td>N/A</td>
-            <td>N/A</td>
-            </tr>
-        EOF;
+            if ($get_names->getNumRows() <= 0) {
+                $list_data .= <<<EOF
+                <tr>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td>N/A</td>
+                </tr>
+            EOF;
+            }
 
             foreach ($get_data->getResult() as $row) {
                 $pods_sum = $row->expected_yield;
@@ -1331,16 +1351,17 @@ class DataController extends BaseController {
             }
 
             foreach ($get_total->getResult() as $row) {
-                $total_pods =+ $row->expected_yield;
+                $total_pods = $total_pods + $row->expected_yield;
             }
 
             foreach($get_names->getResult() as $row) {
                 $total_farmers++;
+                $new_id_list = substr($row->trees, 1, -1);
                 $list_data .= <<<EOF
                 <tr>
                 <td>{$row->surveyor_name}</td>
-                <td>{$row->expected_yield}</td>
-                <td>{$row->tree_id}</td>
+                <td>{$row->added}</td>
+                <td>{$new_id_list}</td>
                 </tr>
             EOF;
             }
@@ -1485,7 +1506,7 @@ class DataController extends BaseController {
                     <tr>
                         <th>Surveyor Name</th>
                         <th>Added Cacao Pods</th>
-                        <th>Surveyed Tree ID</th>
+                        <th>Surveyed Trees</th>
                     </tr>
                 </thead>
                 <tbody>'

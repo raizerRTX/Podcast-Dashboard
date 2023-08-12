@@ -133,7 +133,12 @@ class DataControllerModel{
 
     public static function get_Surveyor_Names() {
         return DataControllerModel::database()->query(
-            "SELECT DISTINCT(surveyor_name), tree_id, expected_yield FROM podcast_trees_records WHERE created = CURRENT_DATE"
+            "SELECT surveyor_name, SUM(expected_yield) AS added,  
+            ARRAY_AGG(tree_id) AS trees 
+            FROM podcast_trees_records 
+            WHERE created = CURRENT_DATE 
+            GROUP BY surveyor_name 
+            ORDER BY surveyor_name;"
         );
     }
 

@@ -910,7 +910,7 @@ function beansStatisticsChart(value_1, value_2, value_3, value_4, value_5, categ
   chart.render();
 }
 
-function yieldForecastGraph(podsData, beansData, category) {
+function yieldForecastGraph(podsData, beansData, weightData, category) {
   var yieldForecastGraphOptions = {
     series: [
       {
@@ -920,6 +920,10 @@ function yieldForecastGraph(podsData, beansData, category) {
       {
         name: 'Beans',
         data: beansData
+      },
+      {
+        name: 'Beans Weight in Kg.',
+        data: weightData
       },
     ],
     chart: {
@@ -941,7 +945,7 @@ function yieldForecastGraph(podsData, beansData, category) {
         endingShape: 'rounded'
       }
     },
-    colors: ["#4CC9F0", "#7209B7"],
+    colors: ["#4CC9F0", "#7209B7", "#53A350"],
     dataLabels: {
       enabled: true
     },
@@ -996,6 +1000,9 @@ function yieldForecastGraph(podsData, beansData, category) {
     },
     yaxis: {
       labels: {
+        formatter: function(val) {
+          return Math.floor(val)
+        },
         style: {
           fontSize: '13px',
           colors: axisColor
