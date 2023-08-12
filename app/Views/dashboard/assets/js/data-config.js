@@ -230,14 +230,14 @@ function getForecastGraph() {
             //Swal
         } else {
             const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
+            
             for (var i = 1; i <= 12; i++) {
                 const d = new Date(String(i));
                 let name = month[d.getMonth()];
                 categories.push(name);
             }                
 
-            yieldForecastGraph(response.pods_data.map(Number), response.beans_data.map(Number), categories);
+            yieldForecastGraph(response.pods_data.map(Number), response.beans_data.map(Number), response.weight_data.map(Number), categories);
         }
     }); 
 }

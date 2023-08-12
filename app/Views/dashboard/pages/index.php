@@ -295,12 +295,12 @@
               <div id="calendar_panel" class="col-12 w-100 col-lg-8 order-2 order-md-3 order-lg-2 mb-4">
                 <div class="card">
                   <div class="row row-bordered g-0">
-                    <div class="col-md-8 overflow-auto">
+                    <div class="col-md-8">
                       <h5 class="card-header m-0 me-2 pb-3"><b>Cacao Harvest Calendar</b></h5>
                     </div>
                     <hr>
                   </div>
-                  <div class="container-fluid">
+                  <div class="container-fluid overflow-auto">
                     <div id="calendar">
                     </div>
                   </div>
