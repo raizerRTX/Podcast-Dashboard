@@ -102,9 +102,9 @@ class DataControllerModel{
 
     public static function getTreeStatus() {
         return DataControllerModel::database()->query(
-            "SELECT * FROM podcast_trees WHERE modified + 30 < CURRENT_DATE
-            AND tree_status != ''
-            ORDER BY modified DESC"
+            "SELECT *
+            FROM public.podcast_trees
+            WHERE tree_status = 'inactive';"
         );
     }
 
@@ -134,17 +134,20 @@ class DataControllerModel{
     public static function get_Surveyor_Names() {
         return DataControllerModel::database()->query(
             "SELECT surveyor_name, SUM(expected_yield) AS added,  
-            ARRAY_AGG(tree_id) AS trees 
+            ARRAY_AGG(tree_id) AS trees,
+            COUNT(tree_id) AS tree_total 
             FROM podcast_trees_records 
             WHERE created = CURRENT_DATE 
             GROUP BY surveyor_name 
-            ORDER BY surveyor_name;"
+            ORDER BY surveyor_name"
         );
     }
 
-    public static function remove_Tree($id) {
+    public static function activate_Tree($id) {
         return DataControllerModel::database()->query(
-            "UPDATE FROM podcast_trees SET tree_status = '' WHERE tree_id = {$id}"
+            "UPDATE podcast_trees 
+            SET tree_status = 'active' 
+            WHERE tree_id = {$id}"
         );
     }
 }

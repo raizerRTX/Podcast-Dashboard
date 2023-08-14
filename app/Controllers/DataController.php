@@ -49,8 +49,8 @@ class DataController extends BaseController {
                     $row->varieties,
                     $row->surveyor_name,
                     date('F d, Y',strtotime($row->date_surveyed)),
-                    $row->lat_y_dd . " Φ",
-                    $row->long_x_dd . " λ",
+                    $row->lat_y_dd . " 桅",
+                    $row->long_x_dd . " 位",
                     date('F d, Y',strtotime($row->last_fertilize)),
                     //date('F d, Y',strtotime($row->expected_harvest_date))
                 ];
@@ -1159,20 +1159,23 @@ class DataController extends BaseController {
         $get_data = DCM::getTreeStatus();
         $response = [];
         $btn = "";
+        $size = 0;
         
         try {
             foreach ($get_data->getResult() as $row) {
-                if ($row->tree_status == "active") {
-                    $btn =  "<button type='button' class='btn btn-radius btn-success disabled btn-sm'>
-                        <b>Active</b>
-                    </button>";
-                } else {
-                    $btn =  "<button type='button' class='btn btn-radius btn-warning disabled btn-sm'>
-                        <b>Inactive</b>
+               if ($row->tree_status == 'inactive') {
+                    $btn = "<button type='button' id='status_label_tree' data-id=".$row->id." class='btn btn-radius btn-warning btn-sm status_label_tree disabled'>
+                        Inactive
                     </button>
-                    <button type='button' id='remove_tree' data-id=".$row->id." class='btn btn-radius btn-danger btn-sm remove_tree'>
-                        Delete
+                    <button type='button' id='activate_tree' data-id=".$row->id." class='btn btn-radius btn-primary btn-sm activate_tree' onClick='activateTree()'>
+                        Activate
                     </button>";
+                }
+                
+                if ($get_data->getNumRows() > 0) {
+                    $size = $get_data->getNumRows();
+                } else {
+                    $size = 0;
                 }
 
                 $arr[] = [
@@ -1184,7 +1187,8 @@ class DataController extends BaseController {
             }
     
             $response = [
-                'data' => $arr
+                'data' => $arr,
+                'size' => $size
             ];
         } catch (\Exception $e) {
             $response = [
@@ -1223,7 +1227,7 @@ class DataController extends BaseController {
                 $get_data = DCM::getTreeForecastStats($year, $new_month);
 
                 foreach($get_data->getResult() as $row) {
-                    $pods_sum =+ $row->expected_yield;
+                    $pods_sum = $pods_sum + $row->expected_yield;
                     if ($row->expected_yield == "") {
                         array_push($pods_data, 0);
                     } else {
@@ -1250,16 +1254,16 @@ class DataController extends BaseController {
                             $label = $expected_beans_w * 0.001;
                         } else if ($expected_beans_w < 1000000 && $expected_beans_w > 1000) {
                             $newWeight = $expected_beans_w * 0.001;
-                            $label = number_format((float)$expected_beans_w, 2, '.', '');
+                            $label = number_format((float)$newWeight, 2, '.', '');
                         } else if ($expected_beans_w > 1000000) {
                             $newWeight = $expected_beans_w * 0.0001;
-                            $label = number_format((float)$expected_beans_w, 2, '.', '');
+                            $label = number_format((float)$newWeight, 2, '.', '');
                         }
                     }
                 }
                 array_push($pods_data, $pods_sum);
                 array_push($beans_data, $beans);
-                array_push($weight, $label);
+                array_push($weight, round($label));
             }
 
             $arr = [
@@ -1289,6 +1293,7 @@ class DataController extends BaseController {
         $total_pods = 0;
         $list_data = "";
         $total_farmers = 0;
+        $total_surveyed_trees = 0;
 
         try {
             $get_data = DCM::get_Forecast_PDF();
@@ -1297,18 +1302,18 @@ class DataController extends BaseController {
             $get_names = DCM::get_Surveyor_Names();
 
             if ($get_data->getNumRows() <= 0) {
-                $table_data = <<<EOF
+                $table_data = '
                 <tr>
                 <td>N/A</td>
                 <td>N/A</td>
                 <td>N/A</td>
-                </tr>
-            EOF;
+                </tr>';
             }
 
             if ($get_names->getNumRows() <= 0) {
                 $list_data .= <<<EOF
                 <tr>
+                <td>N/A</td>
                 <td>N/A</td>
                 <td>N/A</td>
                 <td>N/A</td>
@@ -1343,7 +1348,7 @@ class DataController extends BaseController {
                 <td>{$beans}</td>
                 <td>{$date}</td>
                 </tr>
-                EOF;
+            EOF;
             }
 
             foreach ($get_count->getResult() as $row) {
@@ -1362,6 +1367,7 @@ class DataController extends BaseController {
                 <td>{$row->surveyor_name}</td>
                 <td>{$row->added}</td>
                 <td>{$new_id_list}</td>
+                <td>{$row->tree_total}</td>
                 </tr>
             EOF;
             }
@@ -1484,7 +1490,7 @@ class DataController extends BaseController {
             <table class="borrowers_table">
                 <thead>
                     <tr>
-                        <th>Expected Total Pods Qty.</th>
+                        <th>Expected Total Cacao Pods Qty.</th>
                         <th>Expected Total Beans Qty.</th>
                         <th>Expected Harvest Date</th>
                     </tr>
@@ -1496,17 +1502,18 @@ class DataController extends BaseController {
             <br><br>
             <h2>Daily Farmer\'s Work Output: </h2>
             <ul>
-                <li><h4>The total number of trees surveyed by the farmers today is: ' . $survey_count . '</h4></li>
-                <li><h4>The total number of added cacaopod today is: ' . $total_pods . '</h4>
+                <li><h4>Total number of trees surveyed: ' . $survey_count . '</h4></li>
+                <li><h4>The total number of cacao pods added in the records: ' . $total_pods . '</h4>
             </ul>
             <br>
             <h3>List of Farmer\'s: </h3>
             <table class="borrowers_table">
                 <thead>
                     <tr>
-                        <th>Surveyor Name</th>
+                        <th>Name</th>
                         <th>Added Cacao Pods</th>
-                        <th>Surveyed Trees</th>
+                        <th>Tree IDs</th>
+                        <th>Total Trees Visited</th>
                     </tr>
                 </thead>
                 <tbody>'
@@ -1550,11 +1557,12 @@ class DataController extends BaseController {
         }
     }
 
-    public function remove_Tree() {
+    public function activate_Tree() {
         $tree_id = $this->request->getVar('tree_id');
+        $arr = [];
 
         try {
-            $update = DCM::remove_Tree($tree_id);
+            $update = DCM::activate_Tree($tree_id);
 
             $arr = [
                 'status' => 200
@@ -1563,7 +1571,8 @@ class DataController extends BaseController {
             return $this->response->setJSON($arr);
         } catch (\Exception $e) {
             $arr = [
-                'status' => 500
+                'status' => 500,
+                'message' => $e->getMessage()
             ];
 
             return $this->response->setJSON($arr);

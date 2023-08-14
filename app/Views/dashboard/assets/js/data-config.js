@@ -3,6 +3,7 @@ var variantYear = d.getFullYear();
 const baseYear = 2023;
 let hash = $("#v_button").attr("data-hash");
 var timer = 0;
+var counter = 0;
 
 $(document).ready(function(e) {
     let hash = $("#v_button").attr("data-hash");
@@ -37,7 +38,7 @@ $(document).ready(function(e) {
                 'csrf_test_name' : hash,
             },
             error: function(data) {
-                console.log(data);
+              
             }
         },
         language: {
@@ -47,7 +48,7 @@ $(document).ready(function(e) {
         responsive: true,
         "order": []
     });
-
+    
     $('#statusTable').DataTable( {
         "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]],
         "pageLength": 10,
@@ -58,7 +59,7 @@ $(document).ready(function(e) {
                 'csrf_test_name' : hash,
             },
             error: function(data) {
-                console.log(data);
+                
             }
         },
         language: {
@@ -72,6 +73,7 @@ $(document).ready(function(e) {
     setInterval (function () {
         reloadTreeAnalyticsTable();
         reloadForecastTable();
+        reloadTreeStatusTable();
         treeManagement();
         reloadWidget();
     }, 1500);
@@ -230,7 +232,7 @@ function getForecastGraph() {
             //Swal
         } else {
             const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-            
+    
             for (var i = 1; i <= 12; i++) {
                 const d = new Date(String(i));
                 let name = month[d.getMonth()];
@@ -377,6 +379,20 @@ function reloadTreeAnalyticsTable() {
         } else {
             //Do nothing
         }
+
+    });
+}
+
+function reloadTreeStatusTable() {
+    var url = "treeStatus";
+    var form = {'csrf_test_name' : hash};
+
+    getPageInfo(url, form, function(data) {
+        var table = $('#statusTable').DataTable();
+        var lastData = $('#statusTable').DataTable().row( ':last', { order: 'applied' } );
+        var lastId = lastData[0][0] + 1;
+
+       $("#statusTable").DataTable().ajax.reload(null, false);
 
     });
 }
@@ -529,25 +545,27 @@ function downloadFile(fileName) {
     );
 }
 
-$(".remove_tree").on('click', function(e) {
-    const url =  "removeTree";
+function activateTree() {
+    const url =  "activateTree";
     let hash = $("#v_button").attr("data-hash");
     var postData = {
             "csrf_test_name" : hash,
-            'tree_id' : $(this).attr('data-id')
+            'tree_id' : $("#activate_tree").attr('data-id')
     };
     
     getPageInfo(url, postData, function(response) {
-        if (response.response == 200) {
+        if (response.status == 200) {
             Swal.fire({
                 title: "Success",
-                text: "Tree has been removed.",
+                text: "Tree has been activated.",
                 icon: "success",
             }) .then((value) => {
                 if (value) {
-                    
+                    var tbl = $("#statusTable").DataTable();
+                    tbl.ajax.reload();
                 } else {
-                    
+                    var tbl = $("#statusTable").DataTable();
+                    tbl.ajax.reload();
                 }
             });
         } else {
@@ -564,7 +582,7 @@ $(".remove_tree").on('click', function(e) {
             });
         }
     });
-});
+}
 
 
 
